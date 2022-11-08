@@ -14,53 +14,58 @@ def transform():
         for pokemon, against in pokemons.items():
             for one in against:
                 attack[pokemon].update({one:translate(power)})
-    for key, value in attack.items():
-        print(key, value, end="\n\n")
+
 
 def convert(string):
     li = list(string.split(","))
     return li
 
-def checkSimple(string):
-    if(len(string.split(" ")) < 2):
-        return True
-    else:
-        return False
-
-def max(a, b):
-     
-    if a >= b:
-        return a
-    else:
-        return b
-
-def fight(first, second, pokemons):
+def create(a, b, pokemons, reverse):
     team1, team2 = [], []
-    power1, power2 = -1, -2
-    pokemonsList = convert(pokemons)
-    for i in range(0, first + second):
-        if(i < first):
-            team1.append(pokemonsList[i])
-        else:
-            team2.append(pokemonsList[i])
-    print(team1, team2)
-    for main in range(0, first):
-        for i in range(0, first + second):
-            temp = [1, 1, 1, 1]
-            for x in range(0, len(team2[main].split(" "))):
-                currentDruhyteam = team2[main].split(" ")[x]
-                for y in range(0, len(team1[main].split(" "))):
-                    currentPrvyteam = team1[main].split(" ")[y]
-                    if(True):
-                        print(currentPrvyteam, " vs ", currentDruhyteam)
-                        temp[x + y] = attack[currentPrvyteam][currentDruhyteam]
-                        power1 += max(temp[0] * temp[2], temp[1] * temp[3])/4
-                        power2 += max(temp[0] * temp[2], temp[1] * temp[3])/4
-    if(power1 > power2):
-        return (power1, power2, "ME")
-    elif(power1 < power2):
-        return (power1, power2, "FOE")
+    for i in range(0, a):
+        team1.append(pokemons.split(",")[i])
+    for i in range(a, b + a):
+        team2.append(pokemons.split(",")[i])
+    if reverse:
+        return [team2, team1]
     else:
-        return (power1, power2, "EQUAL")
+        return [team1, team2]
+    
+
+
+def fight(a, b): 
+    my = 0.0 
+    for moj_poke in a:
+        if " " in moj_poke: 
+            moj_poke = moj_poke.split(" ") 
+            for jeho_poke in b: 
+                if " " in jeho_poke: 
+                    jeho_poke = jeho_poke.split(" ")
+                    my += max(attack[moj_poke[0]][jeho_poke[0]]*attack[moj_poke[0]][jeho_poke[1]], attack[moj_poke[1]][jeho_poke[0]]*attack[moj_poke[1]][jeho_poke[1]])
+                else: 
+                    my += max(attack[moj_poke[0]][jeho_poke], attack[moj_poke[1]][jeho_poke])
+        else:
+            for jeho_poke in b:
+                if " " in jeho_poke:
+                    jeho_poke = jeho_poke.split(" ")
+                    my += attack[moj_poke][jeho_poke[0]]*attack[moj_poke][jeho_poke[1]]
+                else: 
+                    my += attack[moj_poke][jeho_poke]
+    return round(my,1) 
+
+
+def start():
+    power1 = fight(create(2,6,"Psychic Dark,Fire,Ghost Ice,Fairy Electric,Normal Steel,Ghost,Poison Fire,Dark Bug", False)[0], create(2,6,"Psychic Dark,Fire,Ghost Ice,Fairy Electric,Normal Steel,Ghost,Poison Fire,Dark Bug", False)[1])
+    power2 = fight(create(2,6,"Psychic Dark,Fire,Ghost Ice,Fairy Electric,Normal Steel,Ghost,Poison Fire,Dark Bug", True)[0], create(2,6,"Psychic Dark,Fire,Ghost Ice,Fairy Electric,Normal Steel,Ghost,Poison Fire,Dark Bug", True)[1])
+    win = ''
+    if(power1 > power2):
+        win = 'ME'
+    elif(power1 < power2):
+        win = 'FOE'
+    else:
+        win = 'EQUAL'
+    return power1, power2, win
+
+
 transform()
-fight(2,6,"Psychic Dark,Fire Electric,Ghost Ice,Fairy Electric,Normal Steel,Ghost Steel,Poison Fire,Dark Bug")
+print(start())
